@@ -17,5 +17,8 @@ return [
     'registration_success_verify' => 'User Registration successful! Please Verify Account with OTP sent to your email address',
     'login_success' => 'Login successful',
     'login_success_verify' => 'Login successful! Please Verify Account with OTP sent to your email address',
-
+    'otp_sent_success' => 'Verification code sent to your email address',
+    'otp_mail_subject' => 'Your Expanse Tracker Verification Code',
+    'invalid_otp' => 'Invalid Verification Code',
+    'verification_success' => 'Account Verified Successfully!',
 ];

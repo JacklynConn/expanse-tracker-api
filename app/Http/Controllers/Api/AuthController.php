@@ -71,4 +71,40 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    public function otp(Request $request)
+    {
+        // get the user
+        $user = auth()->user();
+
+        // generate otp
+        $otp = $this->authService->otp($user);
+
+        // return
+        return response([
+            'message' => __('app.otp_sent_success'),
+        ]);
+    }
+
+    public function verify(Request $request)
+    {
+        // validate the request
+        $request->validate([
+            'otp' => 'required|numeric'
+        ]);
+
+        // get the user
+        $user = auth()->user();
+
+        // verify the otp
+        $user = $this->authService->verify($user, $request);
+
+        // return
+        return response([
+            'message' => __('app.verification_success'),
+            'results' => [
+                'user' => new UserResource($user)
+            ]
+        ]);
+    }
 }
