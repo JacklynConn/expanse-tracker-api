@@ -38,19 +38,35 @@ class AuthService
         return null;
     }
 
-    public function otp(User $user): Otp
+    public function otp(User $user, string $type = 'verification'): Otp
     {
+        // check for spam and throttle
+        $tries = 3;
+        $time = Carbon::now()->subMinutes(30);
+
+        $count = Otp::where([
+            'user_id' => $user->id,
+            'type' => $type,
+            'active' => 1,
+            'created_at' => '>=', $time
+        ])->count();
+
+
+        if ($count >= $tries) {
+            abort(422, __('Too many OTP Requests. Please try again later'));
+        }
+
         $code = rand(100000, 999999);
         
         $otp = Otp::create([
             'user_id' => $user->id,
-            'type' => 'verification',
+            'type' => $type,
             'code' => $code,
             'active' => 1
         ]);
 
         // Send Mail
-        Mail::to($user)->send(new OtpMail($user, $code));
+        Mail::to($user)->send(new OtpMail($user, $otp));
 
         return $otp;
     }
@@ -60,7 +76,8 @@ class AuthService
         $otp = Otp::where([
             'user_id' => $user->id,
             'code' => $request->otp,
-            'active' => 1
+            'active' => 1,
+            'type' => 'verification'
         ])->first();
 
         if (!$otp) {
@@ -72,6 +89,39 @@ class AuthService
         $user->update();
 
         // Deactivate Otp
+        $otp->active = 0;
+        $otp->updated_at = Carbon::now();
+        $otp->update();
+
+        return $user;
+    }
+
+    public function getUserByEmail(string $email): User
+    {
+        return User::where('email', $email)->first();
+    }
+
+    public function resetPassword(User $user, object $request): User
+    {
+        // validate otp
+        $otp = Otp::where([
+            'user_id' => $user->id,
+            'code' => $request->otp,
+            'active' => 1,
+            'type' => 'password-reset'
+        ])->first();
+
+        // Check OTP
+        if (!$otp) {
+            abort(422, __('app.invalid_otp'));
+        }
+
+        // Update Password
+        $user->password = $request->password;
+        $user->updated_at = Carbon::now();
+        $user->update();
+
+        // Deactivate OTP
         $otp->active = 0;
         $otp->updated_at = Carbon::now();
         $otp->update();

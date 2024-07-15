@@ -107,4 +107,45 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    public function resetOtp(Request $request)
+    {
+        // validate the request
+        $request->validate([
+            'email' => 'required|email|max:255|exists:users,email'
+        ]);
+
+        // get the user
+        $user = $this->authService->getUserByEmail($request->email);
+
+        // generate otp
+        $otp = $this->authService->otp($user, 'password-reset');
+
+        // return
+        return response([
+            'message' => __('app.otp_sent_success'),
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        // validate the request
+        $request->validate([
+            'otp' => 'required|numeric',
+            'password' => 'required|string|min:8|max:255|confirmed',
+            'password_confirmation' => 'required|min:8|max:255',
+            'email' => 'required|email|max:255|exists:users,email'
+        ]);
+
+        // get the user
+        $user = $this->authService->getUserByEmail($request->email);
+
+        // reset password
+        $user = $this->authService->resetPassword($user, $request);
+
+        // return
+        return response([
+            'message' => __('app.password_reset_success'),
+        ]);
+    }
 }

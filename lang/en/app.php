@@ -18,7 +18,8 @@ return [
     'login_success' => 'Login successful',
     'login_success_verify' => 'Login successful! Please Verify Account with OTP sent to your email address',
     'otp_sent_success' => 'Verification code sent to your email address',
-    'otp_mail_subject' => 'Your Expanse Tracker Verification Code',
+    'otp_mail_subject' => 'Your 6-digit Expanse Tracker Verification Code',
     'invalid_otp' => 'Invalid Verification Code',
-    'verification_success' => 'Account Verified Successfully!',
+    'verification_success' => 'Verification Successful!',
+    'password_reset_success' => 'Password Reset Successful!',
 ];

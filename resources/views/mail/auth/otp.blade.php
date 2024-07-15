@@ -1,11 +1,20 @@
 <x-mail::message>
-<p>Hi {{ $user->name }},</p>
-<p>
-    We received a request to verify your account on {{ config('app.name') }} through your e-mail address. Your verification code is:
-</p>
-<p>
-    <strong>{{ $code }}</strong>
-</p>
+Hi {{ $user->name }}, 
+
+Your 6-digit code is: 
+
+**{{ $otp->code }}**
+
+@if ($otp->type == 'password-reset')
+Use this code to reset your password in the app.
+@else
+Use this code to complete the verification process in the app.
+@endif
+
+Do not share this code. Expanse representatives will never reach out to your to verify the code over SMS.
+
+<strong>The code is valid for 10 minutes.</strong>
+
 Thanks,<br>
 {{ config('app.name') }}
 </x-mail::message>

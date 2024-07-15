@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Otp;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,15 +16,15 @@ class OtpMail extends Mailable
     use Queueable, SerializesModels;
 
     public User $user;
-    public string $code;
+    public Otp $otp;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user, string $code)
+    public function __construct(User $user, Otp $otp)
     {
         $this->user = $user;
-        $this->code = $code;
+        $this->otp = $otp;
     }
 
     /**
